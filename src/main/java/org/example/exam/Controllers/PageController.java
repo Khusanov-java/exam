@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
-    @GetMapping("/register")
-    public String register(Model model) {
+    @GetMapping("/registerPage")
+    public String registerPage(Model model) {
         model.addAttribute("user",new UserDTO());
         return "register";
     }
