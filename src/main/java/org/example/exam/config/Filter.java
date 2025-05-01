@@ -29,6 +29,10 @@ public class Filter {
                             .defaultSuccessUrl("/home", true)
                             .permitAll();
                 });
+
+        http.logout(logout -> {
+
+        });
         return http.build();
     }
     @Bean

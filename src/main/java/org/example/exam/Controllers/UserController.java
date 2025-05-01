@@ -49,7 +49,7 @@ public class UserController {
         });
         thread.start();
         userDTO.setVerifiedPassword(verificationCode);
-        session.setAttribute("user",userDTO);
+        session.setAttribute("userDTO",userDTO);
         return "email";
     }
 
@@ -57,7 +57,7 @@ public class UserController {
     @PostMapping("/verify/process")
     private String processVerification( HttpSession session, @RequestParam("verification_code") String code) {
         System.out.println("Saving");
-        UserDTO user = (UserDTO)session.getAttribute("user");
+        UserDTO user = (UserDTO)session.getAttribute("userDTO");
         Integer i = Integer.parseInt(code);
         if (i.equals(user.getVerifiedPassword())) {
             User user1= new User();
@@ -71,7 +71,6 @@ public class UserController {
             userService.save(user1);
             System.out.println("saved");
         }
-        session.setAttribute("user",user);
         return "redirect:/login";
     }
 }
