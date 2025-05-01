@@ -3,8 +3,10 @@ package org.example.exam.Controllers;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.exam.DTOS.UserDTO;
+import org.example.exam.entity.Status;
 import org.example.exam.entity.Task;
 import org.example.exam.entity.User;
+import org.example.exam.repository.StatusRepository;
 import org.example.exam.repository.TaskRepository;
 import org.example.exam.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,7 @@ public class PageController {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final StatusRepository statusRepository;
 
 
     @GetMapping("/registerPage")
@@ -61,11 +64,22 @@ public class PageController {
 
 
     @GetMapping("/home")
-    public String home(Model model,HttpSession session) {
-        Object user = session.getAttribute("user");
-        User userDTO = (User) user;
-        List<Task> tasksByUser = taskRepository.findTasksByUser(userDTO);
-        model.addAttribute("tasks", tasksByUser);
+    public String viewBoard(Model model, HttpSession session) {
+        List<Status> statuses = statusRepository.findAllByActiveTrueOrderByPositionNumber();
+
+        model.addAttribute("statusOrdered", statuses);
+
+        User user = (User)session.getAttribute("user");
+
+        List<Task> allTasks = taskRepository.findAll();
+        model.addAttribute("allTasks", allTasks);
+
+        int minPosition = statuses.stream().mapToInt(Status::getPositionNumber).min().orElse(Integer.MAX_VALUE);
+        int maxPosition = statuses.stream().mapToInt(Status::getPositionNumber).max().orElse(Integer.MIN_VALUE);
+        model.addAttribute("minPosition", minPosition);
+        model.addAttribute("maxPosition", maxPosition);
+
+        model.addAttribute("user", user);
         return "home";
     }
 }
