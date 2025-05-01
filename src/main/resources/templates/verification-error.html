@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verification Failed</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .error-container {
+      background-color: #ffe6e6;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.1);
+      text-align: center;
+      width: 350px;
+    }
+    .error-container h2 {
+      color: #d8000c;
+      margin-bottom: 15px;
+    }
+    .error-container p {
+      color: #a94442;
+      font-size: 16px;
+    }
+    .error-container a {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #d8000c;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    .error-container a:hover {
+      background-color: #b30000;
+    }
+  </style>
+</head>
+<body>
+<div class="error-container">
+  <h2>Verification Failed</h2>
+  <p th:text="${error}">The verification code you entered is incorrect.</p>
+  <a href="/email">Try Again</a>
+</div>
+</body>
+</html>

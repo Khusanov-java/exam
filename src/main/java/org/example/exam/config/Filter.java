@@ -18,12 +18,13 @@ public class Filter {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers("login","/registerPage","/register").permitAll()
+                            .requestMatchers("/registerPage","/register","/verify","/verify/process").permitAll()
                             .anyRequest().authenticated();
 
                 })
                 .formLogin(formLogin -> {
                     formLogin
+
                             .defaultSuccessUrl("/home", true)
                             .permitAll();
                 });

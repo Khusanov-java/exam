@@ -1,111 +1,85 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
     <style>
         body {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            background-color: #f0f2f5;
         }
-
         .register-container {
             background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            width: 400px;
-        }
-
-        h2 {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
             text-align: center;
-            color: #333;
+        }
+        .register-container h2 {
             margin-bottom: 20px;
         }
-
-        form div {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="text"], input[type="email"], input[type="password"] {
+        .register-container input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            outline: none;
-            transition: border-color 0.3s;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            border-color: #6a11cb;
-        }
-
-        button {
+        .register-container button {
             width: 100%;
-            padding: 12px;
-            background-color: #6a11cb;
-            border: none;
+            padding: 10px;
+            background-color: #0079bf;
             color: white;
-            font-size: 16px;
-            border-radius: 8px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
-
-        button:hover {
-            background-color: #2575fc;
+        .register-container button:hover {
+            background-color: #005ea6;
         }
-
-        .error-message {
+        .error {
             color: red;
-            text-align: center;
-            margin-bottom: 15px;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
         }
     </style>
 </head>
 <body>
 <div class="register-container">
-    <h2>Register</h2>
-
-    <div th:if="${error}" class="error-message">
-        <p th:text="${error}"></p>
-    </div>
-
-    <form th:action="@{/register}" method="post" th:object="${user}">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />        <div>
-            <label>Username</label>
-            <input type="text" th:field="*{username}" placeholder="Enter your username" required/>
-        </div>
-        <div>
-            <label>Email</label>
-            <input type="email" th:field="*{email}" placeholder="Enter your email" required/>
-        </div>
-        <div>
-            <label>Password</label>
-            <input type="password" th:field="*{password}" placeholder="Enter your password" required/>
-        </div>
-        <div>
-            <label>Confirm Password</label>
-            <input type="password" th:field="*{confirmPassword}" placeholder="Confirm your password" required/>
-        </div>
-        <div>
-            <button type="submit">Register</button>
-        </div>
+    <h2>Register Page</h2>
+    <form id="register-form" action="/register" method="POST" onsubmit="return validateForm()">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="email" id="email" name="email" placeholder="Email" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm Password" required>
+        <div id="password-error" class="error">Passwords do not match</div>
+        <button type="submit">Register</button>
     </form>
 </div>
+
+<script>
+    function validateForm() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const passwordError = document.getElementById('password-error');
+
+        // Password va Confirm Password tengligini tekshirish
+        if (password !== confirmPassword) {
+            passwordError.style.display = 'block';
+            return false; // Formani yuborishni to'xtatish
+        } else {
+            passwordError.style.display = 'none';
+            return true; // Formani yuborishga ruxsat berish
+        }
+    }
+</script>
 </body>
 </html>
