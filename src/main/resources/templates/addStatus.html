@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Add Status</title>
+</head>
+<body>
+<h2>Add Status</h2>
+
+<form th:action="@{/status/add}" th:object="${status}" method="post">
+  <label for="name">Status Name:</label>
+  <input type="text" th:field="*{name}" required />
+
+  <button type="submit">Save</button>
+</form>
+
+<br/>
+<a th:href="@{/home}">Back to Home</a>
+</body>
+</html>
