@@ -19,6 +19,7 @@ public class Filter {
                 .authorizeHttpRequests(auth -> {
                     auth
                             .requestMatchers("/registerPage","/register","/verify/process").permitAll()
+                            .requestMatchers("/login").permitAll()
                             .anyRequest().authenticated();
 
                 })

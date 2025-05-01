@@ -48,7 +48,7 @@ public class PageController {
         if (byEmail.isPresent()) {
             User user = byEmail.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
-                session.setAttribute("user",user);
+                session.setAttribute("user", user);
                 return "redirect:/home";
             } else {
                 model.addAttribute("error", "Incorrect password");
@@ -56,9 +56,9 @@ public class PageController {
         } else {
             model.addAttribute("error", "Email not found");
         }
-
-        return "redirect:/login"; // show login page with error message
+        return "login"; // NOT redirect
     }
+
 
     @GetMapping("/home")
     public String home(Model model,HttpSession session) {
@@ -68,5 +68,4 @@ public class PageController {
         model.addAttribute("tasks", tasksByUser);
         return "home";
     }
-
 }
