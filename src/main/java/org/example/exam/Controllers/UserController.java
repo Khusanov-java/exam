@@ -40,39 +40,29 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public String processRegistration(Model model, HttpSession session,@RequestParam String email, @RequestParam String password,@RequestParam String username) {
+    public String processRegistration(Model model, HttpSession session,@RequestParam("email") String email, @RequestParam("password") String password,@RequestParam String username) {
         UserDTO userDTO = new UserDTO(email,password,username);
+        Integer verificationCode = (int) ((Math.random() * 9000) + 1000);
+        Thread thread = new Thread(() -> {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(userDTO.getEmail());
+            message.setSubject("Your Verification Code");
+            message.setText("Your verification code is: " + verificationCode);
+            mailSender.send(message);
+            System.out.println("Email sent");
+        });
+        thread.start();
+        userDTO.setVerifiedPassword(verificationCode);
         session.setAttribute("user",userDTO);
         return "email";
     }
 
-    @PostMapping("/verify")
-    public String processVerification(@ModelAttribute("user") UserDTO userDTO, @RequestParam("verification_code") String code, HttpSession session, Model model) {
-        Object user = session.getAttribute("user");
-        if (user == null) {
-            model.addAttribute("error", "You are not logged in!");
-            return "verification-error";
-        }
-        Integer verificationCode = (int) ((Math.random() * 9000) + 1000);
-        Object user1 = session.getAttribute("user");
-        UserDTO userDTO1 = (UserDTO) user1;
-        Thread thread = new Thread(() -> {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(userDTO1.getEmail());
-            message.setSubject("Your Verification Code");
-            message.setText("Your verification code is: " + verificationCode);
-            mailSender.send(message);
-        });
-        thread.start();
-        userDTO1.setVerifiedPassword(verificationCode);
-        session.setAttribute("user",userDTO1);
-        return "redirect:/verify/process";
-    }
 
     @PostMapping("/verify/process")
     private String processVerification( HttpSession session, @RequestParam("verification_code") String code) {
         UserDTO user = (UserDTO)session.getAttribute("user");
-        if (code.equals(user.getVerifiedPassword())) {
+        Integer i = Integer.parseInt(code);
+        if (i.equals(user.getVerifiedPassword())) {
             User user1= new User();
             user1.setEmail(user.getEmail());
             user1.setPassword(passwordEncoder.encode(user.getPassword()));
