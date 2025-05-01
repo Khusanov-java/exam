@@ -71,6 +71,7 @@ public class UserController {
             userService.save(user1);
             System.out.println("saved");
         }
+        session.setAttribute("user",user);
         return "redirect:/login";
     }
 }
