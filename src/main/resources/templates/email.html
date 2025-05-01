@@ -57,6 +57,7 @@
     <h2>Email Verification</h2>
     <p class="info-text">Please enter the 6-digit code sent to your email.</p>
     <form action="/verify/process" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <input type="text" name="verification_code" placeholder="Enter code" maxlength="6" required />
         <br />
         <button type="submit">Verify</button>
