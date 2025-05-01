@@ -25,17 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class UserController {
     private final JavaMailSender mailSender;
     private final RoleRepository roleRepository;
-    private UserService userService;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserController(JavaMailSender mailSender, UserRepository userRepository, UserRepository userRepository1, TaskRepository taskRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
-        this.mailSender = mailSender;
-        this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-    }
+
 
 
     @PostMapping("/register")
@@ -59,6 +56,7 @@ public class UserController {
 
     @PostMapping("/verify/process")
     private String processVerification( HttpSession session, @RequestParam("verification_code") String code) {
+        System.out.println("Saving");
         UserDTO user = (UserDTO)session.getAttribute("user");
         Integer i = Integer.parseInt(code);
         if (i.equals(user.getVerifiedPassword())) {
@@ -71,6 +69,7 @@ public class UserController {
             roles.add(role);
             user1.setRoles(roles);
             userService.save(user1);
+            System.out.println("saved");
         }
         return "redirect:/login";
     }
