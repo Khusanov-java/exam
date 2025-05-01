@@ -31,7 +31,6 @@ public class UserController {
     private UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-
     public UserController(JavaMailSender mailSender, UserRepository userRepository, UserRepository userRepository1, TaskRepository taskRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.mailSender = mailSender;
         this.passwordEncoder = passwordEncoder;
