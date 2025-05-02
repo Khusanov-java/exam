@@ -82,7 +82,7 @@ public class PageController {
         int maxPosition = statuses.stream().mapToInt(Status::getPositionNumber).max().orElse(Integer.MIN_VALUE);
         model.addAttribute("minPosition", minPosition);
         model.addAttribute("maxPosition", maxPosition);
-        model.addAttribute("user", user1); // передаём своего User, а не Spring Security User
+        model.addAttribute("user", user1);
         return "home";
     }
 }
