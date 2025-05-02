@@ -22,14 +22,7 @@ public class Filter {
                             .requestMatchers("/login").permitAll()
                             .anyRequest().authenticated();
 
-                })
-                .formLogin(formLogin -> {
-                    formLogin
-                            .loginPage("/login")
-                            .defaultSuccessUrl("/home", true)
-                            .permitAll();
                 });
-
         http.logout(logout -> {
 
         });

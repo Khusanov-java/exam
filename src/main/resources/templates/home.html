@@ -28,9 +28,9 @@
     <div class="card mb-4">
         <div class="card-body d-flex align-items-center">
             <img th:if="${user != null and user.attachment != null}" th:src="@{/attachment/{id}(id=${user.attachment.id})}" alt="User avatar" class="rounded-circle me-3" width="50" height="50">
-            <img th:unless="${user != null and user.attachment != null}" th:src="@{/default.png}" alt="Default avatar" class="rounded-circle me-3" width="50" height="50">
+            <img th:unless="${user != null and user.attachment != null}" th:src="@{/profile.png}" alt="Default avatar" class="rounded-circle me-3" width="50" height="50">
             <div>
-                <p class="mb-0"><strong>Name:</strong> <span th:text="${user?.getUsername()}">Name</span></p>
+                <p class="mb-0"><strong>Name:</strong> <span th:text="${user?.username}">Name</span></p>
                 <p class="mb-0"><strong>Email:</strong> <span th:text="${user?.email}">Email</span></p>
                 <p class="mb-0"><strong>Roles:</strong>
                     <span th:each="role : ${user?.roles}" th:text="${role.role + ' '}"></span>
