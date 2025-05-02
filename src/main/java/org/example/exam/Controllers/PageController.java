@@ -33,7 +33,7 @@ public class PageController {
 
     @GetMapping("/registerPage")
     public String registerPage(Model model) {
-        model.addAttribute("user",new UserDTO());
+        model.addAttribute("user", new UserDTO());
         return "register";
     }
 
@@ -48,13 +48,11 @@ public class PageController {
                         @RequestParam String email,
                         @RequestParam String password) {
         Optional<User> byEmail = userRepository.findByEmail(email);
-        for (int i = 0; i < 100; i++) {
-            System.out.println("byEmail.get() = " + byEmail.get());
-        }
+
         if (byEmail.isPresent()) {
             User user = byEmail.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
-                session.setAttribute("user", user);
+                session.setAttribute("user", user); // сохраняешь в сессию
                 return "redirect:/home";
             } else {
                 model.addAttribute("error", "Incorrect password");
@@ -62,33 +60,29 @@ public class PageController {
         } else {
             model.addAttribute("error", "Email not found");
         }
-        return "login"; // NOT redirect
+        return "login";
     }
 
-
     @GetMapping("/home")
-    public String viewBoard(Model model, HttpSession session,@AuthenticationPrincipal User user) {
+    public String viewBoard(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,HttpSession session) {
+        if (user == null) {
+            return "redirect:/login";
+        }
+        Optional<User> optionalUser = userRepository.findByEmail(user.getUsername());
+        if (optionalUser.isEmpty()) {
+            return "redirect:/login";
+        }
+        User user1 = optionalUser.get();
         List<Status> statuses = statusRepository.findAllByActiveTrueOrderByPositionNumber();
-
-        model.addAttribute("statusOrdered", statuses);
-
-
-        // Xato sessionda xali yoq
-//        User user = (User)session.getAttribute("user");
-
-        session.setAttribute("user", user);
-
         session.setAttribute("statusList", statuses);
-
+        model.addAttribute("statusOrdered", statuses);
         List<Task> allTasks = taskRepository.findAll();
         model.addAttribute("allTasks", allTasks);
-
         int minPosition = statuses.stream().mapToInt(Status::getPositionNumber).min().orElse(Integer.MAX_VALUE);
         int maxPosition = statuses.stream().mapToInt(Status::getPositionNumber).max().orElse(Integer.MIN_VALUE);
         model.addAttribute("minPosition", minPosition);
         model.addAttribute("maxPosition", maxPosition);
-
-        model.addAttribute("user", user);
+        model.addAttribute("user", user1); // передаём своего User, а не Spring Security User
         return "home";
     }
 }
