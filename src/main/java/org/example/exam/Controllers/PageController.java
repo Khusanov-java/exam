@@ -9,6 +9,7 @@ import org.example.exam.entity.User;
 import org.example.exam.repository.StatusRepository;
 import org.example.exam.repository.TaskRepository;
 import org.example.exam.repository.UserRepository;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,7 +48,9 @@ public class PageController {
                         @RequestParam String email,
                         @RequestParam String password) {
         Optional<User> byEmail = userRepository.findByEmail(email);
-
+        for (int i = 0; i < 100; i++) {
+            System.out.println("byEmail.get() = " + byEmail.get());
+        }
         if (byEmail.isPresent()) {
             User user = byEmail.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
@@ -64,12 +67,16 @@ public class PageController {
 
 
     @GetMapping("/home")
-    public String viewBoard(Model model, HttpSession session) {
+    public String viewBoard(Model model, HttpSession session,@AuthenticationPrincipal User user) {
         List<Status> statuses = statusRepository.findAllByActiveTrueOrderByPositionNumber();
 
         model.addAttribute("statusOrdered", statuses);
 
-        User user = (User)session.getAttribute("user");
+
+        // Xato sessionda xali yoq
+//        User user = (User)session.getAttribute("user");
+
+        session.setAttribute("user", user);
 
         session.setAttribute("statusList", statuses);
 
