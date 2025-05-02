@@ -3,10 +3,12 @@ package org.example.exam.Controllers;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.example.exam.Service.UserService;
 import org.example.exam.entity.Attachment;
+import org.example.exam.entity.Status;
 import org.example.exam.entity.Task;
 import org.example.exam.entity.User;
 import org.example.exam.repository.*;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -59,4 +63,35 @@ public class TaskController {
         Attachment attachment = attachmentRepository.findById(task.getAttachment().getId()).get();
         resp.getOutputStream().write(attachment.getContent());
     }
+
+    @PostMapping("/task/moveLeft/{taskId}")
+    public String moveLeft(@PathVariable int taskId, HttpSession session) {
+        List<Status> statusList = (List<Status>)session.getAttribute("statusList");
+        Task task = taskRepository.findById(taskId).get();
+
+        for (int i = 0; i < statusList.size(); i++) {
+            if (statusList.get(i).getId() == task.getStatus().getId()) {
+                task.setStatus(statusList.get(i-1));
+                break;
+            }
+        }
+        taskRepository.save(task);
+        return "redirect:/home";
+    }
+
+    @PostMapping("/task/moveRight/{taskId}")
+    public String moveRight(@PathVariable int taskId, HttpSession session) {
+        List<Status> statusList = (List<Status>)session.getAttribute("statusList");
+        Task task = taskRepository.findById(taskId).get();
+
+        for (int i = 0; i < statusList.size(); i++) {
+            if (statusList.get(i).getId() == task.getStatus().getId()) {
+                task.setStatus(statusList.get(i+1));
+                break;
+            }
+        }
+        taskRepository.save(task);
+        return "redirect:/home";
+    }
+
 }

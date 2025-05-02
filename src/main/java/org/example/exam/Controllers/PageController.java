@@ -71,6 +71,8 @@ public class PageController {
 
         User user = (User)session.getAttribute("user");
 
+        session.setAttribute("statusList", statuses);
+
         List<Task> allTasks = taskRepository.findAll();
         model.addAttribute("allTasks", allTasks);
 

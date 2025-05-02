@@ -70,12 +70,12 @@
 
                                 <!-- Arrows -->
                                 <div class="mt-2 d-flex justify-content-between">
-                                    <form th:if="${status.positionNumber > minPosition}" th:action="@{/task/move/{id}(id=${task.id})}" method="post">
+                                    <form th:if="${status.positionNumber > minPosition}" th:action="@{/task/moveLeft/{id}(id=${task.id})}" method="post">
                                         <input type="hidden" name="_csrf" th:value="${_csrf.token}">
                                         <input type="hidden" name="yol" value="left">
                                         <button class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-left"></i></button>
                                     </form>
-                                    <form th:if="${status.positionNumber < maxPosition}" th:action="@{/task/move/{id}(id=${task.id})}" method="post">
+                                    <form th:if="${status.positionNumber < maxPosition}" th:action="@{/task/moveRight/{id}(id=${task.id})}" method="post">
                                         <input type="hidden" name="_csrf" th:value="${_csrf.token}">
                                         <input type="hidden" name="yol" value="right">
                                         <button class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-right"></i></button>
