@@ -3,9 +3,11 @@ package org.example.exam.Controllers;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.exam.DTOS.UserDTO;
+import org.example.exam.entity.Role;
 import org.example.exam.entity.Status;
 import org.example.exam.entity.Task;
 import org.example.exam.entity.User;
+import org.example.exam.repository.RoleRepository;
 import org.example.exam.repository.StatusRepository;
 import org.example.exam.repository.TaskRepository;
 import org.example.exam.repository.UserRepository;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -29,6 +32,7 @@ public class PageController {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
+    private final RoleRepository roleRepository;
 
 
     @GetMapping("/registerPage")
@@ -68,11 +72,20 @@ public class PageController {
         if (user == null) {
             return "redirect:/login";
         }
+        User sessionUser = (User)session.getAttribute("user");
+
         Optional<User> optionalUser = userRepository.findByEmail(user.getUsername());
         if (optionalUser.isEmpty()) {
             return "redirect:/login";
         }
         User user1 = optionalUser.get();
+        for (int i = 0; i < 10; i++) {
+            System.out.println("user1 = " + i);
+        }
+        if (sessionUser != null) {
+            user1 = sessionUser;
+            System.out.println("user1 = " + user1);
+        }
         List<Status> statuses = statusRepository.findAllByActiveTrueOrderByPositionNumber();
         session.setAttribute("statusList", statuses);
         model.addAttribute("statusOrdered", statuses);
@@ -85,4 +98,38 @@ public class PageController {
         model.addAttribute("user", user1);
         return "home";
     }
+
+    @GetMapping("/user/update/{userId}")
+    public String updateUser(Model model, @PathVariable Integer userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        System.out.println("userId = " + userId);
+        User user = optionalUser.get();
+        System.out.println("user = " + user);
+        model.addAttribute("user", user);
+        return "update-user";
+    }
+
+    @GetMapping("/admin")
+    public String adminPage(Model model) {
+        List<User> allUsers = userRepository.findAll();
+        model.addAttribute("allUsers", allUsers);
+        return "user-crud";
+    }
+
+    @GetMapping("/addUser")
+    public String addUser(Model model) {
+        List<Role> roles = roleRepository.findAll();
+        model.addAttribute("roles", roles);
+        return "add-user";
+    }
+
+    @GetMapping("/admin/user/update/{userId}")
+    public String adminUpdateUser(Model model, @PathVariable Integer userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = optionalUser.get();
+        model.addAttribute("user", user);
+        model.addAttribute("roles",roleRepository.findAll());
+        return "admin-update-user";
+    }
+
 }

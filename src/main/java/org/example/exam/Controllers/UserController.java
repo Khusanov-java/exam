@@ -2,6 +2,8 @@ package org.example.exam.Controllers;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.exam.DTOS.AddUserDTO;
+import org.example.exam.DTOS.UpdateUserDTO;
 import org.example.exam.DTOS.UserDTO;
 import org.example.exam.Service.UserService;
 import org.example.exam.entity.Role;
@@ -16,13 +18,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,8 +31,7 @@ public class UserController {
     private final RoleRepository roleRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-
-
+    private final UserRepository userRepository;
 
 
     @PostMapping("/register")
@@ -55,7 +54,7 @@ public class UserController {
 
 
     @PostMapping("/verify/process")
-    private String processVerification( HttpSession session, @RequestParam("verification_code") String code) {
+    public String processVerification( HttpSession session, @RequestParam("verification_code") String code) {
         System.out.println("Saving");
         UserDTO user = (UserDTO)session.getAttribute("userDTO");
         Integer i = Integer.parseInt(code);
@@ -73,5 +72,36 @@ public class UserController {
         }
         return "redirect:/login";
     }
+
+    @PostMapping("/user/update")
+    public String updateUser(@ModelAttribute UpdateUserDTO userDTO, HttpSession session) {
+        Optional<User> optionalUser = userRepository.findById(userDTO.getId());
+        User user = optionalUser.get();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        User savedUser = userRepository.save(user);
+        session.setAttribute("user",savedUser);
+        return "redirect:/home";
+    }
+
+
+    @PostMapping("/user/add")
+    public String addUser(@ModelAttribute AddUserDTO addUserDTO) {
+        User user = new User();
+        user.setUsername(addUserDTO.getUsername());
+        user.setEmail(addUserDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(addUserDTO.getPassword()));
+        user.setRoles(addUserDTO.getRoles());
+        userRepository.save(user);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/user/delete/{userId}")
+    public String deleteUser(@PathVariable Integer userId) {
+        userRepository.deleteById(userId);
+        return "redirect:/admin";
+    }
+
+
 }
 

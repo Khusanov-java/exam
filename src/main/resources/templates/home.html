@@ -35,6 +35,7 @@
                 <p class="mb-0"><strong>Roles:</strong>
                     <span th:each="role : ${user?.roles}" th:text="${role.role + ' '}"></span>
                 </p>
+                <a th:href="@{/user/update/{id}(id=${user.id})}" class="btn btn-success">Update</a>
             </div>
         </div>
     </div>
