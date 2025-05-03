@@ -65,7 +65,7 @@
                                     </div>
                                     <div>
                                         <a sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MAINTAINER')" th:href="@{task/edit/{id}(id=${task.id})}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
-                                        <a th:href="@{/comments/{id}(id=${task.id})}" class="btn btn-sm btn-info"><i class="bi bi-chat"></i></a>
+                                        <a th:href="@{/comments/{taskId}/{userId}(taskId=${task.id}, userId=${user.id})}" class="btn btn-sm btn-info"><i class="bi bi-chat"></i></a>
                                     </div>
                                 </div>
 
