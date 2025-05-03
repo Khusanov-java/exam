@@ -1,14 +1,15 @@
 package org.example.exam.Controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.example.exam.DTOS.AddUserDTO;
 import org.example.exam.DTOS.UpdateUserDTO;
 import org.example.exam.DTOS.UserDTO;
 import org.example.exam.Service.UserService;
-import org.example.exam.entity.Role;
-import org.example.exam.entity.Roles;
-import org.example.exam.entity.User;
+import org.example.exam.entity.*;
+import org.example.exam.repository.AttachmentRepository;
 import org.example.exam.repository.RoleRepository;
 import org.example.exam.repository.TaskRepository;
 import org.example.exam.repository.UserRepository;
@@ -19,7 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,11 +35,22 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final AttachmentRepository attachmentRepository;
 
 
+    @SneakyThrows
     @PostMapping("/register")
-    public String processRegistration(Model model, HttpSession session,@RequestParam("email") String email, @RequestParam("password") String password,@RequestParam String username) {
-        UserDTO userDTO = new UserDTO(email,password,username);
+    public String processRegistration(Model model,
+                                      HttpSession session,
+                                      @RequestParam("email") String email,
+                                      @RequestParam("password") String password,
+                                      @RequestParam String username,
+                                      @RequestParam MultipartFile file
+                                      ) {
+        Attachment attachment = new Attachment();
+        attachment.setContent(file.getBytes());
+        attachmentRepository.save(attachment);
+        UserDTO userDTO = new UserDTO(email,password,username,attachment);
         Integer verificationCode = (int) ((Math.random() * 9000) + 1000);
         Thread thread = new Thread(() -> {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -63,6 +77,7 @@ public class UserController {
             user1.setEmail(user.getEmail());
             user1.setPassword(passwordEncoder.encode(user.getPassword()));
             user1.setUsername(user.getUsername());
+            user1.setAttachment(user.getAttachment());
             Role role=roleRepository.findRoleByRole(Roles.PROGRAMMER.name());
             List<Role> roles=new ArrayList<>();
             roles.add(role);
@@ -102,6 +117,32 @@ public class UserController {
         return "redirect:/admin";
     }
 
+    @GetMapping("/photo/user/{id}")
+    public void photo(@PathVariable int id, HttpServletResponse resp) throws IOException {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        User user = optionalUser.get();
+        if (user.getAttachment() == null) {
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+
+        Optional<Attachment> optionalAttachment = attachmentRepository.findById(user.getAttachment().getId());
+        if (optionalAttachment.isEmpty()) {
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+
+        Attachment attachment = optionalAttachment.get();
+
+        resp.setContentType("image/jpeg"); // or detect type dynamically if you store it
+        resp.getOutputStream().write(attachment.getContent());
+        resp.getOutputStream().flush();
+    }
 
 }
 
