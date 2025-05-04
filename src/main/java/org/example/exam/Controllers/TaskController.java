@@ -113,10 +113,14 @@ public class TaskController {
         task.setTitle(request.getParameter("title"));
         task.setUser(userRepository.findById(Integer.parseInt(request.getParameter("user"))).get());
         task.setStatus(statusRepository.findById(Integer.parseInt(request.getParameter("statusId"))).get());
-        Attachment attachment = new Attachment();
-        attachmentRepository.save(attachment);
-        attachment.setContent(file.getBytes());
-        task.setAttachment(attachment);
+
+        if (file != null && !file.isEmpty()) {
+            Attachment attachment = new Attachment();
+            attachmentRepository.save(attachment);
+            attachment.setContent(file.getBytes());
+            task.setAttachment(attachment);
+        }
+
         taskRepository.save(task);
         return "redirect:/home";
     }
