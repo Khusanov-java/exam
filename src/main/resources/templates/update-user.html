@@ -55,8 +55,15 @@
 <body>
 <div class="register-container">
     <h2>Update Page</h2>
-    <form id="register-form" action="/user/update" method="POST" onsubmit="return validateForm()">
+    <form id="register-form" action="/user/update" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <div class="text-center">
+            <label for="photo">
+                <img th:if="${user != null and user.attachment != null}" th:src="@{/photo/user/{id}(id=${user.id})}" alt="User avatar" class="rounded-circle me-3" width="50" height="50">
+                <img th:unless="${user != null and user.attachment != null}" th:src="@{/profile.png}" alt="Default avatar" class="rounded-circle me-3" width="50" height="50">
+                <input id="photo" name="file" type="file" class="d-none"> <!-- УБРАЛ required -->
+            </label>
+        </div>
         <input type="hidden" id="id" name="id" th:value="${user.id}">
         <input type="email" id="email" name="email" th:value="${user.email}">
         <input type="text" id="username" name="username" th:value="${user.username}">

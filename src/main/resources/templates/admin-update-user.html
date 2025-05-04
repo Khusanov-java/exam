@@ -8,9 +8,17 @@
 <body class="container mt-5">
 
 <h2 class="mb-4">Update User</h2>
-<form th:action="@{/admin/userUpdate/{id}(id=${user.id})}" method="post">
+<form th:action="@{/admin/userUpdate/{id}(id=${user.id})}" method="post" enctype="multipart/form-data">
   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
   <input type="hidden" name="id" th:value="${user.id}"/>
+
+  <div class="text-center">
+    <label for="photo">
+      <img th:if="${user != null and user.attachment != null}" th:src="@{/photo/user/{id}(id=${user.id})}" alt="User avatar" class="rounded-circle me-3" width="50" height="50">
+      <img th:unless="${user != null and user.attachment != null}" th:src="@{/profile.png}" alt="Default avatar" class="rounded-circle me-3" width="50" height="50">
+      <input id="photo" name="file" type="file" class="d-none"> <!-- УБРАЛ required -->
+    </label>
+  </div>
 
   <div class="mb-3">
     <label for="username" class="form-label">Username</label>

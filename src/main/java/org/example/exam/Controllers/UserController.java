@@ -89,15 +89,31 @@ public class UserController {
     }
 
     @PostMapping("/user/update")
-    public String updateUser(@ModelAttribute UpdateUserDTO userDTO, HttpSession session) {
+    public String updateUser(@ModelAttribute UpdateUserDTO userDTO,
+                             @RequestParam(value = "file", required = false) MultipartFile file,
+                             HttpSession session) throws IOException {
+
         Optional<User> optionalUser = userRepository.findById(userDTO.getId());
+        if (optionalUser.isEmpty()) {
+            return "redirect:/error"; // обработка ошибки
+        }
+
         User user = optionalUser.get();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
+
+        if (file != null && !file.isEmpty()) {
+            Attachment attachment = new Attachment();
+            attachment.setContent(file.getBytes());
+            attachmentRepository.save(attachment);
+            user.setAttachment(attachment);
+        }
+
         User savedUser = userRepository.save(user);
-        session.setAttribute("user",savedUser);
+        session.setAttribute("user", savedUser);
         return "redirect:/home";
     }
+
 
 
     @PostMapping("/user/add")
