@@ -13,6 +13,7 @@ import org.example.exam.entity.Task;
 import org.example.exam.entity.User;
 import org.example.exam.repository.*;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -94,4 +95,29 @@ public class TaskController {
         return "redirect:/home";
     }
 
+    @GetMapping("/task/edit/{id}")
+    public String editTask(@PathVariable Integer id, Model model) {
+        Task task = taskRepository.findById(id).get();
+        List<User> users = userRepository.findAll();
+        List<Status> statuses = statusRepository.findAll();
+        model.addAttribute("task", task);
+        model.addAttribute("users", users);
+        model.addAttribute("statuses", statuses);
+        return "task-edit";
+    }
+
+    @SneakyThrows
+    @PostMapping("/edited/task/{id}")
+    public String editTask(@PathVariable Integer id,HttpServletRequest request, @RequestParam MultipartFile file) {
+        Task task = taskRepository.findById(id).get();
+        task.setTitle(request.getParameter("title"));
+        task.setUser(userRepository.findById(Integer.parseInt(request.getParameter("user"))).get());
+        task.setStatus(statusRepository.findById(Integer.parseInt(request.getParameter("statusId"))).get());
+        Attachment attachment = new Attachment();
+        attachmentRepository.save(attachment);
+        attachment.setContent(file.getBytes());
+        task.setAttachment(attachment);
+        taskRepository.save(task);
+        return "redirect:/home";
+    }
 }
