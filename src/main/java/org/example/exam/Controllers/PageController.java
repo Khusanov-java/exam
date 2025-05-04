@@ -3,10 +3,7 @@ package org.example.exam.Controllers;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.exam.DTOS.UserDTO;
-import org.example.exam.entity.Role;
-import org.example.exam.entity.Status;
-import org.example.exam.entity.Task;
-import org.example.exam.entity.User;
+import org.example.exam.entity.*;
 import org.example.exam.repository.RoleRepository;
 import org.example.exam.repository.StatusRepository;
 import org.example.exam.repository.TaskRepository;
@@ -130,6 +127,16 @@ public class PageController {
         model.addAttribute("user", user);
         model.addAttribute("roles",roleRepository.findAll());
         return "admin-update-user";
+    }
+
+    @GetMapping("/manageOrders")
+    public String manageOrders(Model model) {
+        List<Status> all = statusRepository.findAll();
+        model.addAttribute("allStatus", all);
+        long count = statusRepository.count();
+        model.addAttribute("count", count);
+        model.addAttribute("statusListWrapper", new StatusListWrapper()); // Initialize StatusListWrapper
+        return "manage-orders";
     }
 
 }
