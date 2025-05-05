@@ -25,14 +25,16 @@ public class Filter {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/registerPage", "/register", "/verify/process", "/login", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/manageOrders","/status/addStatus").hasAnyRole("ADMIN", "MAINTAINER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")                    // твоя страница логина
-                        .loginProcessingUrl("/login")           // URL, куда отправляется POST-запрос из формы
-                        .usernameParameter("email")             // поле email вместо username
-                        .passwordParameter("password")          // стандартное имя
-                        .defaultSuccessUrl("/home", true)       // успешный логин
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
