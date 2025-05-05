@@ -10,6 +10,5 @@ public class AdminUpdateUserDTO {
     Integer id;
     String username;
     String email;
-    String password;
     List<Role> roles;
 }

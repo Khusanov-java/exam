@@ -108,8 +108,10 @@ public class PageController {
 
     @GetMapping("/admin")
     public String adminPage(Model model) {
+        List<Role> roles = roleRepository.findAll();
         List<User> allUsers = userRepository.findAll();
         model.addAttribute("allUsers", allUsers);
+        model.addAttribute("roles", roles);
         return "user-crud";
     }
 

@@ -26,7 +26,7 @@ public class Filter {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/registerPage", "/register", "/verify/process", "/login", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/manageOrders","/status/addStatus").hasAnyRole("ADMIN", "MAINTAINER")
+                        .requestMatchers("/manageOrders","/status/addStatus","/task/addTaskPage").hasAnyRole("ADMIN", "MAINTAINER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -43,6 +43,11 @@ public class Filter {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/home"); // или "/access-denied"
+                        })
                 )
                 .authenticationProvider(authenticationProvider());
 
